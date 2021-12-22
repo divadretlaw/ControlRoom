@@ -14,52 +14,61 @@ struct PreferencesView: View {
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        Form {
-            Section(header: Text("Main Window").font(.headline)) {
-                Toggle("Keep window on top", isOn: $preferences.wantsFloatingWindow)
-                Toggle("Show Default simulator", isOn: $preferences.showDefaultSimulator)
-                Toggle("Show booted devices first", isOn: $preferences.showBootedDevicesFirst)
+        VStack {
+            GroupBox {
+                Form {
+                    Section(header: Text("Main Window").font(.headline)) {
+                        Toggle("Keep window on top", isOn: $preferences.wantsFloatingWindow)
+                        Toggle("Show Default simulator", isOn: $preferences.showDefaultSimulator)
+                        Toggle("Show booted devices first", isOn: $preferences.showBootedDevicesFirst)
+                    }
+
+                    Spacer()
+                        .frame(height: 30)
+
+                    Section(header: Text("Menu Bar").font(.headline)) {
+                        Toggle("Show icon in menu bar", isOn: $preferences.wantsMenuBarIcon)
+                    }
+
+                    Spacer()
+                        .frame(height: 30)
+
+                    Section(header: Text("Keyboard shortcuts").font(.headline)) {
+                        HStack {
+                            Text("Resend last push notification")
+                            Spacer()
+                            KeyboardShortcuts.Recorder(for: .resendLastPushNotification)
+                        }
+
+                        HStack {
+                            Text("Restart last selected app")
+                            Spacer()
+                            KeyboardShortcuts.Recorder(for: .restartLastSelectedApp)
+                        }
+
+                        HStack {
+                            Text("Reopen last URL")
+                            Spacer()
+                            KeyboardShortcuts.Recorder(for: .reopenLastURL)
+                        }
+                    }
+                }
+                .padding(8)
             }
 
             Spacer()
-                .frame(height: 30)
-
-            Section(header: Text("Menu Bar").font(.headline)) {
-                Toggle("Show icon in menu bar", isOn: $preferences.wantsMenuBarIcon)
-            }
-
-            Spacer()
-                .frame(height: 30)
-
-            Section(header: Text("Keyboard shortcuts").font(.headline)) {
-                HStack {
-                    Text("Resend last push notification")
-                    KeyboardShortcuts.Recorder(for: .resendLastPushNotification)
-                }
-
-                HStack {
-                    Text("Restart last selected app")
-                    KeyboardShortcuts.Recorder(for: .restartLastSelectedApp)
-                }
-
-                HStack {
-                    Text("Reopen last URL")
-                    KeyboardShortcuts.Recorder(for: .reopenLastURL)
-                }
-            }
-
-            Spacer()
-                .frame(height: 30)
+                .frame(height: 20)
 
             HStack {
                 Spacer()
 
-                Button("Done") {
+                Button("Close") {
                     presentationMode.wrappedValue.dismiss()
                 }
             }
         }
         .padding(20)
+        .frame(minWidth: 400, maxWidth: .infinity)
         .onChange(of: preferences.wantsMenuBarIcon) { newValue in
             guard let appDelegate = NSApp.delegate as? AppDelegate else { return }
 

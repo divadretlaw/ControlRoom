@@ -58,12 +58,14 @@ struct SimulatorActionSheet<Content: View>: View {
             }
 
             HStack {
-                Button("Cancel", action: dismiss)
                 Spacer()
+                Button("Cancel", action: dismiss)
+                    .keyboardShortcut(.cancelAction)
                 Button(confirmationTitle) {
                     confirmationAction()
                     dismiss()
                 }
+                .keyboardShortcut(.defaultAction)
                 .disabled(canConfirm == false)
             }
         }

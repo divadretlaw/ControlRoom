@@ -118,7 +118,7 @@ struct AppView: View {
 
             FormSpacer()
 
-            VStack {
+            Section {
                 TextView(text: $pushPayload)
                     .font(.system(.body, design: .monospaced))
                     .disableAutocorrection(true)
@@ -134,6 +134,7 @@ struct AppView: View {
 
             Spacer()
         }
+        .disabled(simulator.state != .booted)
         .tabItem {
             Text("App")
         }

@@ -54,6 +54,7 @@ struct LocationView: View {
                 Button("Activate", action: changeLocation)
             }
         }
+        .disabled(simulator.state != .booted)
         .tabItem {
             Text("Location")
         }

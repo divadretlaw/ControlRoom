@@ -16,13 +16,14 @@ struct AppIcon: View {
         if let icon = application.icon {
             Image(nsImage: icon)
                 .resizable()
-                .cornerRadius(width / 5)
+                .scaledToFit()
+                .clipShape(RoundedRectangle(cornerRadius: width / 5, style: .continuous))
                 .frame(width: width, height: width)
         } else {
             Rectangle()
                 .fill(Color.clear)
                 .overlay(
-                    RoundedRectangle(cornerRadius: width / 5)
+                    RoundedRectangle(cornerRadius: width / 5, style: .continuous)
                         .stroke(Color.primary, style: StrokeStyle(lineWidth: 0.5, dash: [width / 20 + 1]))
                 )
                 .frame(width: width, height: width)

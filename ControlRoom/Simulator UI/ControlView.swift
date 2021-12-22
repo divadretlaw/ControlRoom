@@ -53,7 +53,6 @@ struct ControlView: View {
                 NetworkView(simulator: simulator)
                 ScreenView(simulator: simulator)
             }
-            .disabled(simulator.state != .booted)
         }
         .padding()
     }

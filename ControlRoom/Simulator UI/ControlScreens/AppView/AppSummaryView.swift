@@ -19,9 +19,9 @@ struct AppSummaryView: View {
                 Text(application.displayName)
                     .font(.headline)
                 Text(application.versionNumber.isNotEmpty ? "Version \(application.versionNumber)" : "")
-                    .font(.caption)
+                    .font(.system(.subheadline, design: .monospaced))
                 Text(application.buildNumber.isNotEmpty ? "Build \(application.buildNumber)" : "")
-                    .font(.caption)
+                    .font(.system(.subheadline, design: .monospaced))
             }
         }
     }

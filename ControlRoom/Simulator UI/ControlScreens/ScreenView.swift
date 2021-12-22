@@ -54,67 +54,71 @@ struct ScreenView: View {
     @AppStorage("CRMedia_VideoFormat") private var videoFormat = 0
 
     var body: some View {
-        Form {
-            Section(header: Text("Screenshot").font(.headline)) {
-                Picker("Format:", selection: $screenshot.type) {
-                    ForEach(SimCtl.IO.ImageFormat.allCases, id: \.self) { type in
-                        Text(type.rawValue.uppercased()).tag(type)
+        ScrollView {
+            Form {
+                Section(header: Text("Screenshot").font(.headline)) {
+                    Picker("Format:", selection: $screenshot.type) {
+                        ForEach(SimCtl.IO.ImageFormat.allCases, id: \.self) { type in
+                            Text(type.rawValue.uppercased()).tag(type)
+                        }
                     }
+
+                    Button("Take Screenshot", action: takeScreenshot)
+
+                    FormSpacer()
                 }
 
-                Button("Take Screenshot", action: takeScreenshot)
-
-                FormSpacer()
-            }
-
-            Section(header: Text("Video").font(.headline)) {
-                Picker("Format:", selection: $videoFormat) {
-                    ForEach(0..<VideoFormat.all.count) { item in
-                        Text(VideoFormat.all[item].name)
+                Section(header: Text("Video").font(.headline)) {
+                    Picker("Format:", selection: $videoFormat) {
+                        ForEach(0..<VideoFormat.all.count) { item in
+                            Text(VideoFormat.all[item].name)
+                        }
                     }
+
+                    Text(VideoFormat.all[videoFormat].description)
+
+                    HStack {
+                        Button(recordingProcess == nil ? "Start Recording" : "Stop Recording", action: toggleRecordingVideo)
+                    }
+
+                    FormSpacer()
                 }
 
-                Text(VideoFormat.all[videoFormat].description)
+                Section(header:
+                    VStack(alignment: .leading) {
+                        Text("Advanced options")
+                            .font(.headline)
+                        Text("Applies to both screenshots and videos")
+                            .font(.caption)
+                    }
+                ) {
+                    if simulator.deviceFamily == .iPad || simulator.deviceFamily == .iPhone {
+                        Picker("Display:", selection: $screenshot.display) {
+                            ForEach(SimCtl.IO.Display.all, id: \.self) { display in
+                                Text(display?.rawValue.capitalized ?? "None").tag(display)
+                            }
+                        }
+                    }
 
-                HStack {
-                    Button(recordingProcess == nil ? "Start Recording" : "Stop Recording", action: toggleRecordingVideo)
-                }
-
-                FormSpacer()
-            }
-
-            Section(header:
-                VStack(alignment: .leading) {
-                    Text("Advanced options")
-                        .font(.headline)
-                    Text("Applies to both screenshots and videos")
-                        .font(.caption)
-                }
-            ) {
-                if simulator.deviceFamily == .iPad || simulator.deviceFamily == .iPhone {
-                    Picker("Display:", selection: $screenshot.display) {
-                        ForEach(SimCtl.IO.Display.all, id: \.self) { display in
-                            Text(display?.rawValue.capitalized ?? "None").tag(display)
+                    Picker("Mask:", selection: $screenshot.mask) {
+                        ForEach(SimCtl.IO.Mask.all, id: \.self) { mask in
+                            Text(mask?.rawValue.capitalized ?? "None").tag(mask)
                         }
                     }
                 }
 
-                Picker("Mask:", selection: $screenshot.mask) {
-                    ForEach(SimCtl.IO.Mask.all, id: \.self) { mask in
-                        Text(mask?.rawValue.capitalized ?? "None").tag(mask)
-                    }
+                Spacer()
+
+                if exportProgress != 1.0 {
+                    ProgressView("Exporting \(exportDescription)", value: exportProgress, total: 1.0)
                 }
             }
-
-            Spacer()
-
-            if exportProgress != 1.0 {
-                ProgressView("Exporting \(exportDescription)", value: exportProgress, total: 1.0)
-            }
-        }.tabItem {
+            .padding()
+            .disabled(simulator.state != .booted)
+        }
+        .tabItem {
             Text("Screen")
         }
-        .padding()
     }
 
     /// Takes a screenshot of the device's current screen and saves it to the desktop.

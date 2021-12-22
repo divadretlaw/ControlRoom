@@ -20,27 +20,30 @@ struct BatteryView: View {
     let simulator: Simulator
 
     var body: some View {
-        Form {
-            Picker("State:", selection: $batteryState.onChange(updateBattery)) {
-                ForEach(SimCtl.StatusBar.BatteryState.allCases, id: \.self) { state in
-                    Text(state.displayName)
+        ScrollView {
+            Form {
+                Picker("State:", selection: $batteryState.onChange(updateBattery)) {
+                    ForEach(SimCtl.StatusBar.BatteryState.allCases, id: \.self) { state in
+                        Text(state.displayName)
+                    }
                 }
-            }
-            .pickerStyle(RadioGroupPickerStyle())
+                .pickerStyle(RadioGroupPickerStyle())
 
-            VStack {
-                Text("Current battery percentage: \(Int(round(batteryLevel)))%")
-                Slider(value: $batteryLevel, in: 0...100, onEditingChanged: levelChanged, minimumValueLabel: Text("0%"), maximumValueLabel: Text("100%")) {
-                    Text("Level:")
+                VStack {
+                    Text("Current battery percentage: \(Int(round(batteryLevel)))%")
+                    Slider(value: $batteryLevel, in: 0...100, onEditingChanged: levelChanged, minimumValueLabel: Text("0%"), maximumValueLabel: Text("100%")) {
+                        Text("Level:")
+                    }
                 }
-            }
 
-            Spacer()
+                Spacer()
+            }
+            .padding()
+            .disabled(simulator.state != .booted)
         }
         .tabItem {
             Text("Battery")
         }
-        .padding()
     }
 
     /// Sends battery updates all at once; simctl gets unhappy if we send them individually.

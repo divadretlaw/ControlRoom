@@ -44,139 +44,142 @@ struct SystemView: View {
 	@State var dropHovering: Bool = false
 
     var body: some View {
-        Form {
-            Group {
-                HStack {
-                    DatePicker("Time:", selection: $time)
-                    Button("Set", action: setTime)
-                    Button("Set to 9:41", action: setAppleTime)
-                }
-
-                FormSpacer()
-            }
-
-            Group {
-                Picker("Appearance:", selection: $appearance.onChange(updateAppearance)) {
-                    ForEach(SimCtl.UI.Appearance.allCases, id: \.self) {
-                        Text($0.displayName)
-                    }
-                }
-
-                FormSpacer()
-            }
-
-            Group {
-                Picker("Language:", selection: $language) {
-                    ForEach(languages, id: \.self) {
-                        Text(NSLocale.current.localizedString(forLanguageCode: $0) ?? "")
-                    }
-                }
-
-                Picker("Locale:", selection: $locale) {
-                    ForEach(locales(for: language), id: \.self) {
-                        Text(NSLocale.current.localizedString(forIdentifier: $0) ?? "")
-                    }
-                }
-                HStack {
-                    Button("Set Language/Locale", action: updateLanguage)
-                    Text("(Requires Reboot)").font(.system(size: 11)).foregroundColor(.secondary)
-                }
-
-                FormSpacer()
-            }
-
-            Group {
-                Section {
-                    Button("Trigger iCloud Sync", action: triggerSync)
-                }
-
-                FormSpacer()
-            }
-
-            Group {
-                Section(header: Text("Copy Pasteboard")) {
+        ScrollView {
+            Form {
+                Group {
                     HStack {
-                        Button("Simulator → Mac", action: copyPasteboardToMac)
-                        Button("Mac → Simulator", action: copyPasteboardToSim)
+                        DatePicker("Time:", selection: $time)
+                        Button("Set", action: setTime)
+                        Button("Set to 9:41", action: setAppleTime)
                     }
+
+                    FormSpacer()
                 }
 
-                FormSpacer()
-            }
+                Group {
+                    Picker("Appearance:", selection: $appearance.onChange(updateAppearance)) {
+                        ForEach(SimCtl.UI.Appearance.allCases, id: \.self) {
+                            Text($0.displayName)
+                        }
+                    }
 
-            Group {
-                Section(header: Text("Open URL")) {
+                    FormSpacer()
+                }
+
+                Group {
+                    Picker("Language:", selection: $language) {
+                        ForEach(languages, id: \.self) {
+                            Text(NSLocale.current.localizedString(forLanguageCode: $0) ?? "")
+                        }
+                    }
+
+                    Picker("Locale:", selection: $locale) {
+                        ForEach(locales(for: language), id: \.self) {
+                            Text(NSLocale.current.localizedString(forIdentifier: $0) ?? "")
+                        }
+                    }
                     HStack {
-                        TextField("URL / deep link to open", text: $lastOpenURL)
-                        Button("Open URL", action: openURL)
+                        Button("Set Language/Locale", action: updateLanguage)
+                        Text("(Requires Reboot)").font(.system(size: 11)).foregroundColor(.secondary)
                     }
-                }
-				        FormSpacer()
-                Section(header: Text("Add Root Certificate")) {
-                    HStack {
-                        TextField("Trusted root certificate file location", text: $lastCertificateFilePath)
-                        Button("Add Root Certificate", action: addRootCertificate)
-                    }
-                }
-          }
 
-          Spacer()
-          Group {
-          Section(header: Text("Location on Disk")) {
-            HStack {
-              Text("Device ID")
-              Spacer()
-              Text(simulator.udid)
-              Button("Copy", action: copyDeviceID)
-            }
-            HStack(alignment: .top) {
-              Text("Root Path:")
-              Spacer()
-              Text(simulator.urlForFilePath(.root).relativePath)
-            }
-            HStack {
-              Spacer()
-              Button("Copy", action: { copyPath(.root) })
-              Button("Open in Finder", action: { openInFinder(.root) })
-              Button("Open in Terminal", action: { openInTerminal(.root) })
-            }
-            VStack {
-              HStack(alignment: .top) {
-                Text("Files Path:")
-                Spacer()
-                Text(simulator.urlForFilePath(.files).relativePath)
+                    FormSpacer()
+                }
+
+                Group {
+                    Section {
+                        Button("Trigger iCloud Sync", action: triggerSync)
+                    }
+
+                    FormSpacer()
+                }
+
+                Group {
+                    Section(header: Text("Copy Pasteboard")) {
+                        HStack {
+                            Button("Simulator → Mac", action: copyPasteboardToMac)
+                            Button("Mac → Simulator", action: copyPasteboardToSim)
+                        }
+                    }
+
+                    FormSpacer()
+                }
+
+                Group {
+                    Section(header: Text("Open URL")) {
+                        HStack {
+                            TextField("URL / deep link to open", text: $lastOpenURL)
+                            Button("Open URL", action: openURL)
+                        }
+                    }
+                            FormSpacer()
+                    Section(header: Text("Add Root Certificate")) {
+                        HStack {
+                            TextField("Trusted root certificate file location", text: $lastCertificateFilePath)
+                            Button("Add Root Certificate", action: addRootCertificate)
+                        }
+                    }
               }
-              HStack(alignment: .bottom) {
-                Text("drag file(s) here to copy").font(.caption)
-                Spacer()
-                Button("Copy", action: { copyPath(.files) })
-                Button("Open in Finder", action: { openInFinder(.files) })
-                Button("Open in Terminal", action: { openInTerminal(.files) })
+
+              Spacer()
+              Group {
+              Section(header: Text("Location on Disk")) {
+                HStack {
+                  Text("Device ID")
+                  Spacer()
+                  Text(simulator.udid)
+                  Button("Copy", action: copyDeviceID)
+                }
+                HStack(alignment: .top) {
+                  Text("Root Path:")
+                  Spacer()
+                  Text(simulator.urlForFilePath(.root).relativePath)
+                }
+                HStack {
+                  Spacer()
+                  Button("Copy", action: { copyPath(.root) })
+                  Button("Open in Finder", action: { openInFinder(.root) })
+                  Button("Open in Terminal", action: { openInTerminal(.root) })
+                }
+                VStack {
+                  HStack(alignment: .top) {
+                    Text("Files Path:")
+                    Spacer()
+                    Text(simulator.urlForFilePath(.files).relativePath)
+                  }
+                  HStack(alignment: .bottom) {
+                    Text("drag file(s) here to copy").font(.caption)
+                    Spacer()
+                    Button("Copy", action: { copyPath(.files) })
+                    Button("Open in Finder", action: { openInFinder(.files) })
+                    Button("Open in Terminal", action: { openInTerminal(.files) })
+                  }
+                }
+                .padding(5)
+                .overlay(
+                  RoundedRectangle(cornerRadius: 5)
+                    .stroke(dropHovering ? Color.white : Color.gray, lineWidth: 1)
+                )
+                .onDrop(of: [.fileURL], isTargeted: $dropHovering) { providers in
+                  return simulator.copyFilesFromProviders(providers, toFilePath: .files)
+                }
               }
+              FormSpacer()
             }
-            .padding(5)
-            .overlay(
-              RoundedRectangle(cornerRadius: 5)
-                .stroke(dropHovering ? Color.white : Color.gray, lineWidth: 1)
-            )
-            .onDrop(of: [.fileURL], isTargeted: $dropHovering) { providers in
-              return simulator.copyFilesFromProviders(providers, toFilePath: .files)
-            }
-          }
-          FormSpacer()
-        }
 
-        Spacer()
+            Spacer()
 
-            HStack {
-                Button("Reset Keychain", action: resetKeychain)
-                Button("Erase Content and Settings", action: eraseDevice)
+                HStack {
+                    Button("Reset Keychain", action: resetKeychain)
+                    Button("Erase Content and Settings", action: eraseDevice)
+                }
             }
+            .padding()
+            .disabled(simulator.state != .booted)
         }
         .tabItem {
             Text("System")
         }
-        .padding()
     }
 
     /// Changes the system clock to a new value.
